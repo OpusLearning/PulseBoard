@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="color-scheme" content="dark" />
+  <title>Pulseboard</title>
+  <link rel="stylesheet" href="/assets/styles.css" />
+</head>
+<body>
+  <div class="bg" aria-hidden="true"></div>
+
+  <header class="top">
+    <div class="brand">
+      <div class="mark" aria-hidden="true"></div>
+      <div>
+        <h1>Pulseboard</h1>
+        <p class="sub">A live pulse of selected feeds — calm motion, clean signal.</p>
+      </div>
+    </div>
+
+    <div class="status" role="status" aria-live="polite">
+      <div class="pill" id="stamp">Loading…</div>
+      <div class="pill pill-muted" id="count">—</div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="grid" id="grid" aria-label="Feed items"></section>
+
+    <footer class="footer">
+      <div class="muted">Sources update hourly.</div>
+      <div class="muted" id="meta"></div>
+    </footer>
+  </main>
+
+  <script src="/assets/app.js" defer></script>
+</body>
+</html>

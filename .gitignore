@@ -1,0 +1,10 @@
+# Generated runtime outputs
+/data/pulse.json
+/logs/
+
+# Backups
+*.bak-*
+
+# OS/editor
+.DS_Store
+*.swp
