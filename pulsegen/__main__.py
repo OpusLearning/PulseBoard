@@ -18,6 +18,7 @@ def main(argv: list[str] | None = None) -> int:
     prun.add_argument("--out", dest="outdir", required=True, help="Output directory")
     prun.add_argument("--voice", default="witty-cheeky-sharp")
     prun.add_argument("--seed", type=int, default=0)
+    prun.add_argument("--ai", action="store_true", help="Use OpenAI (requires OPENAI_API_KEY)")
 
     pval = sub.add_parser("validate-editor", help="Validate an editor.json file")
     pval.add_argument("--file", required=True)
@@ -29,7 +30,7 @@ def main(argv: list[str] | None = None) -> int:
     args = p.parse_args(argv)
 
     if args.cmd == "run":
-        res = run(day=args.date, pulse_in=args.infile, out_dir=args.outdir, voice=args.voice, seed=args.seed)
+        res = run(day=args.date, pulse_in=args.infile, out_dir=args.outdir, voice=args.voice, seed=args.seed, use_ai=args.ai)
         print(res)
         return 0
 
