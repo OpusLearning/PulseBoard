@@ -11,9 +11,10 @@ from .audio import render_script, update_audio_index
 from .elevenlabs_client import tts_from_env
 from .cards import render_cards
 from .exports import export_bundle
+from .today import generate_today
 
 
-def run(*, day: str, pulse_in: str | Path, out_dir: str | Path, voice: str = "witty-cheeky-sharp", seed: int = 0, use_ai: bool = False, use_tts: bool = False, use_cards: bool = False, use_export: bool = False) -> dict[str, Any]:
+def run(*, day: str, pulse_in: str | Path, out_dir: str | Path, voice: str = "witty-cheeky-sharp", seed: int = 0, use_ai: bool = False, use_tts: bool = False, use_cards: bool = False, use_export: bool = False, use_today: bool = False) -> dict[str, Any]:
     out_dir = Path(out_dir)
     pulse = read_json(pulse_in)
 
@@ -45,6 +46,17 @@ def run(*, day: str, pulse_in: str | Path, out_dir: str | Path, voice: str = "wi
     if use_cards:
         render_cards(editor=editor, out_dir=out_dir, day=day)
         paths["cards_json"] = str(data_dir / "cards.json")
+
+    # today.json (single payload for Today view)
+    if use_today:
+        import json as _json
+        ap = (data_dir / "audio.json")
+        cp = (data_dir / "cards.json")
+        audio_obj = _json.loads(ap.read_text("utf-8")) if ap.exists() else None
+        cards_obj = _json.loads(cp.read_text("utf-8")) if cp.exists() else None
+        today = generate_today(pulse=pulse, editor=editor, audio=audio_obj, cards=cards_obj, day=day, use_ai=use_ai, ai=ai)
+        write_json_atomic(data_dir / "today.json", today)
+        paths["today_json"] = str(data_dir / "today.json")
 
     if use_export:
         zp = export_bundle(out_dir=out_dir, day=day)

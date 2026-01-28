@@ -15,48 +15,75 @@
       <div class="mark" aria-hidden="true"></div>
       <div>
         <h1>Pulseboard</h1>
-        <p class="sub">A live pulse of selected feeds — calm motion, clean signal.</p>
+        <p class="sub">Open for 3 minutes. Feel informed, amused, ahead.</p>
       </div>
     </div>
 
     <div class="status" role="status" aria-live="polite">
       <div class="pill" id="stamp">Loading…</div>
       <div class="pill pill-muted" id="count">—</div>
+      <select class="pill pill-muted" id="lens" aria-label="Lens">
+        <option value="neutral">Neutral</option>
+        <option value="cheeky">Cheeky</option>
+        <option value="contrarian">Contrarian</option>
+        <option value="eli12">Explain-12</option>
+      </select>
     </div>
   </header>
 
   <main class="wrap">
-
-    <section class="hero" id="hero" aria-label="Today's Pulseboard">
+    <section class="hero" aria-label="Today">
       <div class="hero-inner">
-        <div class="hero-kicker">Today's AI take</div>
-        <h2 class="hero-title" id="brief-title">Loading…</h2>
-        <p class="hero-brief" id="brief-text">&nbsp;</p>
-                <div class="audio" id="audio">
-          <div class="audio-title">Today in ~30 seconds</div>
+        <div class="hero-kicker" id="today-kicker">Your Pulse</div>
+        <h2 class="hero-title" id="today-title">Loading…</h2>
+        <p class="hero-brief" id="today-angle">&nbsp;</p>
+
+        <div class="meter" aria-label="3-minute done">
+          <div class="meter-row">
+            <div class="meter-label">3-minute done</div>
+            <div class="meter-pct" id="meter-pct">0%</div>
+          </div>
+          <div class="meter-bar"><div class="meter-fill" id="meter-fill" style="width:0%"></div></div>
+          <div class="meter-steps" id="meter-steps">
+            <span data-step="brief">Brief</span>
+            <span data-step="audio">Audio</span>
+            <span data-step="cards">Cards</span>
+          </div>
+        </div>
+
+        <div class="audio" id="audio">
+          <div class="audio-title">Play the briefing</div>
           <audio id="audio-player" controls preload="none"></audio>
           <div class="audio-meta" id="audio-meta">Loading audio…</div>
         </div>
-
-<div class="hero-row">
-          <div class="hero-chip" id="memeable">&nbsp;</div>
-          <div class="hero-chip muted" id="themes">&nbsp;</div>
-        </div>
       </div>
+    </section>
+
+    <section class="today" aria-label="The 3">
+      <div class="cards-head">
+        <h2>The 3</h2>
+        <div class="muted" id="updated">—</div>
+      </div>
+      <div class="today3" id="the3"></div>
     </section>
 
     <section class="cards" aria-label="Shareable cards">
       <div class="cards-head">
-        <h2>Cards</h2>
-        <div class="muted" id="cards-meta">Shareable visuals, updated hourly.</div>
+        <h2>Share</h2>
+        <div class="muted" id="cards-meta">Cards, ready.</div>
       </div>
       <div class="cards-grid" id="cards"></div>
     </section>
 
-    <section class="grid" id="grid" aria-label="Feed items"></section>
+    <section class="done" aria-label="Done" id="done" hidden>
+      <div class="group">
+        <div class="group-head"><h2>You’re done.</h2><div class="group-meta">Want depth on 1 topic?</div></div>
+        <div class="cards" id="depth"></div>
+      </div>
+    </section>
 
     <footer class="footer">
-      <div class="muted">Sources update hourly.</div>
+      <div class="muted">Hard stop: no doomscrolling on Today.</div>
       <div class="muted" id="meta"></div>
     </footer>
   </main>

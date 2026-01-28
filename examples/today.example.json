@@ -1,0 +1,18 @@
+{
+  "date": "2026-01-29",
+  "generated_utc": "2026-01-29T06:05:00Z",
+  "updated_utc": "2026-01-29T06:05:00Z",
+  "variants": {
+    "neutral": {"angle": "A high-signal day: here’s what actually moved.", "what_to_say": ["The key story is X because Y."], "signal": 0.8, "time_s": 180},
+    "cheeky": {"angle": "The world is speedrunning plot twists again.", "what_to_say": ["Here’s the line: X — because Y."], "signal": 0.7, "time_s": 180},
+    "contrarian": {"angle": "Everyone’s watching X; the real leverage is Y.", "what_to_say": ["Hot take: the second-order effect is Y."], "signal": 0.85, "time_s": 180},
+    "eli12": {"angle": "Big stuff happened. Here’s the simple version.", "what_to_say": ["In one sentence: X happened and it matters because Y."], "signal": 0.75, "time_s": 180}
+  },
+  "the3": [
+    {"title": "Story A", "source": "BBC", "link": "https://example.com/a", "summary": "One line.", "why_it_matters": "One line.", "watch_for": "One line.", "what_to_say": "One line.", "confidence": 0.72, "confidence_reason": "Multiple sources."},
+    {"title": "Story B", "source": "Reuters", "link": "https://example.com/b", "summary": "One line.", "why_it_matters": "One line.", "watch_for": "One line.", "what_to_say": "One line.", "confidence": 0.68, "confidence_reason": "Clear reporting."},
+    {"title": "Story C", "source": "AP", "link": "https://example.com/c", "summary": "One line.", "why_it_matters": "One line.", "watch_for": "One line.", "what_to_say": "One line.", "confidence": 0.64, "confidence_reason": "Early reports."}
+  ],
+  "audio": {"latest": "assets/audio/2026-01-29.mp3", "transcript": "assets/audio/2026-01-29.txt"},
+  "cards": ["assets/cards/2026-01-29-01.png", "assets/cards/2026-01-29-02.png", "assets/cards/2026-01-29-03.png"]
+}

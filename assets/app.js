@@ -1,9 +1,6 @@
-/* Pulseboard frontend — minimal, robust, no build step */
+/* Pulseboard Today frontend — static-first, resilient */
 
-const ENDPOINT = "/data/pulse.json";
-const EDITOR_ENDPOINT = "/data/editor.json";
-const AUDIO_ENDPOINT = "/data/audio.json";
-const CARDS_ENDPOINT = "/data/cards.json";
+const TODAY_ENDPOINT = "/data/today.json";
 
 function $(sel) { return document.querySelector(sel); }
 
@@ -26,261 +23,10 @@ function timeAgo(iso) {
   const min = Math.floor(sec / 60);
   const hr = Math.floor(min / 60);
   const day = Math.floor(hr / 24);
-
   if (sec < 60) return `${sec}s ago`;
   if (min < 60) return `${min}m ago`;
   if (hr < 48) return `${hr}h ago`;
   return `${day}d ago`;
-}
-
-function fmtUTC(iso) {
-  const d = parseDate(iso);
-  if (!d) return "—";
-  return d.toISOString().replace("T", " ").replace(/\.\d+Z$/, "Z");
-}
-
-function validatePulse(data) {
-  const errs = [];
-  if (!data || typeof data !== "object") errs.push("pulse.json is not an object");
-  if (!data || !Array.isArray(data.items)) errs.push("pulse.json missing items[]");
-  return errs;
-}
-
-async function fetchPulse() {
-  const res = await fetch(ENDPOINT, { cache: "no-store" });
-  if (!res.ok) throw new Error(`Failed to load pulse.json (${res.status})`);
-  const data = await res.json();
-  const errs = validatePulse(data);
-  if (errs.length) throw new Error(errs.join("; "));
-  return data;
-}
-
-function validateEditor(data) {
-  const errs = [];
-  if (!data || typeof data !== "object") errs.push("editor.json is not an object");
-  if (data && typeof data.editors_brief !== "string") errs.push("editor.json missing editors_brief");
-  if (data && !Array.isArray(data.top_themes)) errs.push("editor.json missing top_themes[]");
-  if (data && (!data.most_memeable || typeof data.most_memeable !== "object")) errs.push("editor.json missing most_memeable");
-  return errs;
-}
-
-async function fetchEditor() {
-  const res = await fetch(EDITOR_ENDPOINT, { cache: "no-store" });
-  if (!res.ok) throw new Error(`Failed to load editor.json (${res.status})`);
-  const data = await res.json();
-  const errs = validateEditor(data);
-  if (errs.length) throw new Error(errs.join("; "));
-  return data;
-}
-
-function renderEditor(ed) {
-  const briefTitle = document.querySelector("#brief-title");
-  const briefText = document.querySelector("#brief-text");
-  const memeable = document.querySelector("#memeable");
-  const themes = document.querySelector("#themes");
-
-  if (!briefTitle || !briefText || !memeable || !themes) return;
-
-  // Title: keep it simple for now; later we can use a daily headline.
-  briefTitle.textContent = safeText(ed.voice || "Pulseboard");
-  briefText.textContent = safeText(ed.editors_brief || "");
-
-  const mm = ed.most_memeable || {};
-  const headline = safeText(mm.headline || "");
-  const link = safeText(mm.link || "");
-  memeable.innerHTML = link
-    ? `Most memeable: <a href="${escapeAttr(link)}" target="_blank" rel="noreferrer">${escapeHTML(headline)}</a>`
-    : `Most memeable: ${escapeHTML(headline)}`;
-
-  const top = (ed.top_themes || []).slice(0, 4).map(t => safeText(t.theme)).filter(Boolean);
-  themes.textContent = top.length ? `Top themes: ${top.join(" · ")}` : "Top themes: —";
-}
-
-
-function validateAudioIndex(data) {
-  const errs = [];
-  if (!data || typeof data !== "object") errs.push("audio.json is not an object");
-  if (data && typeof data.latest !== "string") errs.push("audio.json missing latest");
-  if (data && !Array.isArray(data.items)) errs.push("audio.json missing items[]");
-  return errs;
-}
-
-async function fetchAudioIndex() {
-  const res = await fetch(AUDIO_ENDPOINT, { cache: "no-store" });
-  if (!res.ok) throw new Error(`Failed to load audio.json (${res.status})`);
-  const data = await res.json();
-  const errs = validateAudioIndex(data);
-  if (errs.length) throw new Error(errs.join("; "));
-  return data;
-}
-
-function renderAudioIndex(idx) {
-  const player = document.querySelector("#audio-player");
-  const meta = document.querySelector("#audio-meta");
-  if (!player || !meta) return;
-
-  const latest = safeText(idx.latest || "");
-  if (!latest) {
-    meta.textContent = "No audio yet.";
-    return;
-  }
-  player.src = latest.startsWith("/") ? latest : `/${latest}`;
-
-  const item = (idx.items || [])[0] || {};
-  const date = safeText(item.date || "");
-  meta.innerHTML = date ? `Latest: ${escapeHTML(date)} · <a href="${escapeAttr(player.src)}">download</a>` : `Latest · <a href="${escapeAttr(player.src)}">download</a>`;
-}
-
-function groupBySource(items) {
-  const map = new Map();
-  for (const it of items) {
-    const src = safeText(it.source || "Unknown");
-    if (!map.has(src)) map.set(src, []);
-    map.get(src).push(it);
-  }
-  return map;
-}
-
-
-function validateCards(data) {
-  const errs = [];
-  if (!data || typeof data !== "object") errs.push("cards.json is not an object");
-  if (data && !Array.isArray(data.cards)) errs.push("cards.json missing cards[]");
-  return errs;
-}
-
-async function fetchCards() {
-  const res = await fetch(CARDS_ENDPOINT, { cache: "no-store" });
-  if (!res.ok) throw new Error(`Failed to load cards.json (${res.status})`);
-  const data = await res.json();
-  const errs = validateCards(data);
-  if (errs.length) throw new Error(errs.join("; "));
-  return data;
-}
-
-function renderCards(data) {
-  const grid = document.querySelector("#cards");
-  const meta = document.querySelector("#cards-meta");
-  if (!grid || !meta) return;
-
-  const cards = data.cards || [];
-  if (!cards.length) {
-    meta.textContent = "No cards yet.";
-    return;
-  }
-
-  meta.textContent = `Latest: ${safeText(data.date || "")}`;
-
-  grid.innerHTML = cards.slice(0, 3).map(c => {
-    const url = '/' + safeText(c.png || '').replace(/^\/+/, '');
-    const cap = safeText(c.caption || '');
-    return `
-      <figure class="cardimg">
-        <a href="${escapeAttr(url)}" target="_blank" rel="noreferrer">
-          <img src="${escapeAttr(url)}" alt="${escapeAttr(cap)}" loading="lazy" decoding="async" />
-        </a>
-        <figcaption>
-          <span>${escapeHTML(cap)}</span>
-          <a class="dl" href="${escapeAttr(url)}" download>download</a>
-        </figcaption>
-      </figure>
-    `;
-  }).join('');
-}
-
-function sortNewestFirst(items) {
-  return [...items].sort((a, b) => {
-    const da = parseDate(a.published_utc)?.getTime() ?? 0;
-    const db = parseDate(b.published_utc)?.getTime() ?? 0;
-    return db - da;
-  });
-}
-
-function card(it) {
-  const title = safeText(it.title || "(untitled)");
-  const link = safeText(it.link || "#");
-  const src = safeText(it.source || "Unknown");
-  const ago = timeAgo(it.published_utc);
-  const utc = fmtUTC(it.published_utc);
-
-  // deterministic accent choice per-source for subtle structure
-  const accent = (hash(src) % 3);
-  const accentClass = accent === 0 ? "a0" : accent === 1 ? "a1" : "a2";
-
-  return `
-    <a class="card ${accentClass}" href="${escapeAttr(link)}" target="_blank" rel="noreferrer">
-      <div class="card-top">
-        <span class="source">${escapeHTML(src)}</span>
-        <span class="when" title="${escapeAttr(utc)}">${escapeHTML(ago)}</span>
-      </div>
-      <div class="title">${escapeHTML(title)}</div>
-    </a>
-  `;
-}
-
-function section(source, items) {
-  const count = items.length;
-  const body = items.map(card).join("");
-  return `
-    <section class="group" aria-label="${escapeAttr(source)}">
-      <div class="group-head">
-        <h2>${escapeHTML(source)}</h2>
-        <div class="group-meta">${count} item${count === 1 ? "" : "s"}</div>
-      </div>
-      <div class="cards">${body}</div>
-    </section>
-  `;
-}
-
-function render(data) {
-  const grid = $("#grid");
-  const stamp = $("#stamp");
-  const countEl = $("#count");
-  const meta = $("#meta");
-
-  const items = sortNewestFirst(data.items || []);
-  const groups = groupBySource(items);
-
-  stamp.textContent = `Updated: ${timeAgo(data.generated_utc)}`;
-  stamp.title = `UTC: ${fmtUTC(data.generated_utc)}`;
-  countEl.textContent = `${items.length} items`;
-
-  const parts = [];
-  for (const [src, arr] of groups.entries()) {
-    parts.push(section(src, arr));
-  }
-
-  grid.innerHTML = parts.join("");
-  meta.textContent = `Endpoint: ${ENDPOINT}`;
-}
-
-function renderError(err) {
-  const grid = $("#grid");
-  const stamp = $("#stamp");
-  const countEl = $("#count");
-  stamp.textContent = "Update failed";
-  countEl.textContent = "—";
-  grid.innerHTML = `
-    <section class="group">
-      <div class="group-head"><h2>Error</h2></div>
-      <div class="cards">
-        <div class="card a2" role="alert">
-          <div class="card-top"><span class="source">Pulseboard</span><span class="when">—</span></div>
-          <div class="title">${escapeHTML(String(err && err.message ? err.message : err))}</div>
-        </div>
-      </div>
-    </section>
-  `;
-}
-
-// Helpers
-function hash(s) {
-  let h = 2166136261;
-  for (let i = 0; i < s.length; i++) {
-    h ^= s.charCodeAt(i);
-    h = Math.imul(h, 16777619);
-  }
-  return (h >>> 0);
 }
 
 function escapeHTML(s) {
@@ -292,37 +38,182 @@ function escapeHTML(s) {
     .replaceAll("'", "&#39;");
 }
 
-function escapeAttr(s) {
-  return escapeHTML(s);
+function escapeAttr(s) { return escapeHTML(s); }
+
+async function fetchToday() {
+  const res = await fetch(TODAY_ENDPOINT, { cache: "no-store" });
+  if (!res.ok) throw new Error(`Failed to load today.json (${res.status})`);
+  return await res.json();
+}
+
+function getLens() {
+  return localStorage.getItem("pb_lens") || "neutral";
+}
+
+function setLens(v) {
+  localStorage.setItem("pb_lens", v);
+}
+
+function meterInit() {
+  const state = { brief: false, audio: false, cards: false };
+
+  function pct() {
+    const done = Object.values(state).filter(Boolean).length;
+    return Math.round((done / 3) * 100);
+  }
+
+  function render() {
+    const p = pct();
+    const fill = $("#meter-fill");
+    const pctEl = $("#meter-pct");
+    if (fill) fill.style.width = `${p}%`;
+    if (pctEl) pctEl.textContent = `${p}%`;
+
+    const steps = $("#meter-steps");
+    if (steps) {
+      for (const el of steps.querySelectorAll("span[data-step]")) {
+        const k = el.getAttribute("data-step");
+        el.classList.toggle("done", !!state[k]);
+      }
+    }
+
+    const done = $("#done");
+    if (done) done.hidden = p < 100;
+  }
+
+  function mark(k) { if (!state[k]) { state[k] = true; render(); } }
+
+  render();
+  return { mark };
+}
+
+function renderToday(today) {
+  const stamp = $("#stamp");
+  const count = $("#count");
+  const title = $("#today-title");
+  const kicker = $("#today-kicker");
+  const angle = $("#today-angle");
+  const updated = $("#updated");
+
+  const lens = getLens();
+  const v = (today.variants && today.variants[lens]) || (today.variants && today.variants.neutral) || null;
+
+  const day = safeText(today.date || "");
+  if (kicker) kicker.textContent = `Your Pulse (${day})`;
+  if (title) title.textContent = "Your Pulse is ready";
+  if (angle) angle.textContent = v ? safeText(v.angle) : "";
+
+  if (stamp) {
+    stamp.textContent = `Updated: ${timeAgo(today.updated_utc)}`;
+    stamp.title = safeText(today.updated_utc);
+  }
+
+  if (updated) updated.textContent = `Updated ${timeAgo(today.updated_utc)}`;
+
+  // The 3
+  const the3 = $("#the3");
+  if (the3) {
+    const items = today.the3 || [];
+    count.textContent = "3 stories";
+    the3.innerHTML = items.map((s, i) => {
+      const link = safeText(s.link || "#");
+      return `
+        <article class="t3">
+          <div class="t3-k">${i+1}</div>
+          <div class="t3-b">
+            <div class="t3-h">${escapeHTML(safeText(s.title))}</div>
+            <div class="t3-m">${escapeHTML(safeText(s.summary))}</div>
+            <div class="t3-r"><span>Why:</span> ${escapeHTML(safeText(s.why_it_matters))}</div>
+            <div class="t3-r"><span>Watch:</span> ${escapeHTML(safeText(s.watch_for))}</div>
+            <div class="t3-r"><span>What to say:</span> ${escapeHTML(safeText(s.what_to_say))}</div>
+            <div class="t3-f">
+              <a href="${escapeAttr(link)}" target="_blank" rel="noreferrer">source</a>
+              <span class="muted">confidence ${(Number(s.confidence||0)*100).toFixed(0)}% — ${escapeHTML(safeText(s.confidence_reason))}</span>
+            </div>
+          </div>
+        </article>
+      `;
+    }).join("");
+  }
+}
+
+function renderAudio(today, meter) {
+  const player = $("#audio-player");
+  const meta = $("#audio-meta");
+  if (!player || !meta) return;
+
+  const latest = safeText(today.audio && today.audio.latest);
+  const transcript = safeText(today.audio && today.audio.transcript);
+  if (!latest) {
+    meta.textContent = "Audio unavailable.";
+    return;
+  }
+  player.src = latest.startsWith("/") ? latest : `/${latest}`;
+  meta.innerHTML = `Transcript: <a href="/${escapeAttr(transcript)}" target="_blank" rel="noreferrer">open</a> · <a href="${escapeAttr(player.src)}">download</a>`;
+
+  player.addEventListener("play", () => meter.mark("audio"), { once: true });
+}
+
+function renderCards(today, meter) {
+  const grid = $("#cards");
+  if (!grid) return;
+
+  const cards = today.cards || [];
+  grid.innerHTML = cards.slice(0, 3).map((png) => {
+    const url = '/' + safeText(png).replace(/^\/+/, '');
+    return `
+      <figure class="cardimg">
+        <a href="${escapeAttr(url)}" target="_blank" rel="noreferrer">
+          <img src="${escapeAttr(url)}" alt="Pulseboard card" loading="lazy" decoding="async" />
+        </a>
+        <figcaption>
+          <span class="muted">Shareable</span>
+          <a class="dl" href="${escapeAttr(url)}" download>download</a>
+        </figcaption>
+      </figure>
+    `;
+  }).join('');
+
+  // mark cards when any card is clicked
+  grid.addEventListener('click', () => meter.mark('cards'), { once: true });
+}
+
+function renderError(err) {
+  const title = $("#today-title");
+  const angle = $("#today-angle");
+  if (title) title.textContent = "Pulse unavailable";
+  if (angle) angle.textContent = safeText(err && err.message ? err.message : err);
+  const meta = $("#meta");
+  if (meta) meta.textContent = `Endpoint: ${TODAY_ENDPOINT}`;
 }
 
 (async () => {
+  const meter = meterInit();
+
+  const lensSel = $("#lens");
+  if (lensSel) {
+    lensSel.value = getLens();
+    lensSel.addEventListener('change', () => {
+      setLens(lensSel.value);
+      // re-render from cached today
+      if (window.__pb_today) renderToday(window.__pb_today);
+    });
+  }
+
   try {
-    const data = await fetchPulse();
-    render(data);
+    const today = await fetchToday();
+    window.__pb_today = today;
 
-    try {
-      const ed = await fetchEditor();
-      renderEditor(ed);
+    renderToday(today);
+    renderAudio(today, meter);
+    renderCards(today, meter);
 
-      try {
-        const ax = await fetchAudioIndex();
-        renderAudioIndex(ax);
+    // brief counts as done once today rendered
+    meter.mark('brief');
 
-        try {
-          const cx = await fetchCards();
-          renderCards(cx);
-        } catch (e4) {
-          // cards optional
-        }
-      } catch (e3) {
-        // audio is optional
-        const meta = document.querySelector("#audio-meta");
-        if (meta) meta.textContent = "Audio unavailable.";
-      }
-    } catch (e2) {
-      // editor.json is optional; ignore failures for now
-    }
+    const meta = $("#meta");
+    if (meta) meta.textContent = `Endpoint: ${TODAY_ENDPOINT}`;
+
   } catch (e) {
     renderError(e);
   }
