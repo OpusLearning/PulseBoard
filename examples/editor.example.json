@@ -1,0 +1,17 @@
+{
+  "date": "2026-01-29",
+  "generated_utc": "2026-01-29T06:05:00Z",
+  "voice": "witty-cheeky-sharp",
+  "editors_brief": "Today’s pulse: markets, election, storm. The headlines are in a competitive sport with reality. Stay sharp.",
+  "top_themes": [
+    {"theme": "markets", "count": 1, "links": ["https://example.com/story1"]},
+    {"theme": "election", "count": 1, "links": ["https://example.com/story2"]},
+    {"theme": "storm", "count": 1, "links": ["https://example.com/story3"]}
+  ],
+  "most_memeable": {
+    "headline": "Markets wobble as ministers trade blame",
+    "caption": "When the world insists on being a sketch show.",
+    "rationale": "Picked for maximum absurdity potential (MVP heuristic).",
+    "link": "https://example.com/story1"
+  }
+}

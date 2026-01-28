@@ -5,6 +5,7 @@ import argparse
 from .pipeline import run
 from .io import read_json
 from .validate import validate_editor
+from .schema_validate import validate_jsonschema
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -21,6 +22,10 @@ def main(argv: list[str] | None = None) -> int:
     pval = sub.add_parser("validate-editor", help="Validate an editor.json file")
     pval.add_argument("--file", required=True)
 
+    pschema = sub.add_parser("validate-schema", help="Validate JSON file with JSON Schema")
+    pschema.add_argument("--schema", required=True)
+    pschema.add_argument("--file", required=True)
+
     args = p.parse_args(argv)
 
     if args.cmd == "run":
@@ -31,6 +36,11 @@ def main(argv: list[str] | None = None) -> int:
     if args.cmd == "validate-editor":
         data = read_json(args.file)
         validate_editor(data)
+        print({"ok": True})
+        return 0
+
+    if args.cmd == "validate-schema":
+        validate_jsonschema(schema_path=args.schema, data_path=args.file)
         print({"ok": True})
         return 0
 
