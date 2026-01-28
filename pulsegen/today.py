@@ -200,7 +200,8 @@ def generate_today(*, pulse: dict[str, Any], editor: dict[str, Any], audio: dict
     # cards pointers
     cards_list: list[str] = []
     if isinstance(cards, dict):
-        for c in (cards.get("cards") or [])[:3]:
+        # include all generated cards (UI may choose how many to display)
+        for c in (cards.get("cards") or []):
             if isinstance(c, dict) and c.get("png"):
                 cards_list.append(str(c["png"]))
 

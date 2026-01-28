@@ -177,7 +177,8 @@ function renderCards(today, meter) {
   if (!grid) return;
 
   const cards = today.cards || [];
-  grid.innerHTML = cards.slice(0, 3).map((png, idx) => {
+  const maxCards = Math.min(cards.length, 7);
+  grid.innerHTML = cards.slice(0, maxCards).map((png, idx) => {
     const url = '/' + safeText(png).replace(/^\/+/, '');
     return `
       <figure class="cardimg cardimg-wide" style="scroll-snap-align:start">
@@ -185,7 +186,7 @@ function renderCards(today, meter) {
           <img src="${escapeAttr(url)}" alt="Pulseboard shareable" loading="lazy" decoding="async" />
         </a>
         <figcaption>
-          <span class="muted">Shareable ${idx+1}</span>
+          <span class="muted">Card ${idx+1}</span>
           <a class="dl" href="${escapeAttr(url)}" download>download</a>
         </figcaption>
       </figure>
