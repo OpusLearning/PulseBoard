@@ -19,3 +19,4 @@ __pycache__/
 exports/
 assets/audio/
 assets/cards/
+/data/editor.json
