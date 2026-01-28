@@ -100,7 +100,7 @@ function renderToday(today) {
 
   const day = safeText(today.date || "");
   if (kicker) kicker.textContent = `Your Pulse (${day})`;
-  if (title) title.textContent = "Your Pulse is ready";
+  if (title) title.textContent = "You’re up to speed.";
   if (angle) angle.textContent = v ? safeText(v.angle) : "";
 
   if (stamp) {
@@ -117,18 +117,36 @@ function renderToday(today) {
     count.textContent = "3 stories";
     the3.innerHTML = items.map((s, i) => {
       const link = safeText(s.link || "#");
+      const conf = Number(s.confidence || 0);
+      const confLabel = conf >= 0.75 ? "High" : conf >= 0.55 ? "Medium" : "Low";
+      const insight = safeText(s.summary || "");
+      const why = safeText(s.why_it_matters || "");
+      const watch = safeText(s.watch_for || "");
+      const say = safeText(s.what_to_say || "");
+      const source = safeText(s.source || "");
+
       return `
         <article class="t3">
           <div class="t3-k">${i+1}</div>
           <div class="t3-b">
             <div class="t3-h">${escapeHTML(safeText(s.title))}</div>
-            <div class="t3-m">${escapeHTML(safeText(s.summary))}</div>
-            <div class="t3-r"><span>Why:</span> ${escapeHTML(safeText(s.why_it_matters))}</div>
-            <div class="t3-r"><span>Watch:</span> ${escapeHTML(safeText(s.watch_for))}</div>
-            <div class="t3-r"><span>What to say:</span> ${escapeHTML(safeText(s.what_to_say))}</div>
+            <div class="t3-insight">${escapeHTML(insight)}</div>
+
+            <details class="t3-more">
+              <summary>Details</summary>
+              <div class="t3-r"><span>Why it matters</span> ${escapeHTML(why)}</div>
+              <div class="t3-r"><span>Watch for</span> ${escapeHTML(watch)}</div>
+              <div class="t3-r"><span>What to say</span> ${escapeHTML(say)}</div>
+            </details>
+
+            <div class="trust">
+              <div class="trust-row"><span class="trust-k">Confidence</span> <span class="trust-v">${confLabel}</span></div>
+              <div class="trust-row"><span class="trust-k">Why</span> <span class="trust-v">${escapeHTML(safeText(s.confidence_reason))}</span></div>
+              <div class="trust-row"><span class="trust-k">Source</span> <span class="trust-v">${escapeHTML(source)}</span></div>
+            </div>
+
             <div class="t3-f">
-              <a href="${escapeAttr(link)}" target="_blank" rel="noreferrer">source</a>
-              <span class="muted">confidence ${(Number(s.confidence||0)*100).toFixed(0)}% — ${escapeHTML(safeText(s.confidence_reason))}</span>
+              <a href="${escapeAttr(link)}" target="_blank" rel="noreferrer">Open source</a>
             </div>
           </div>
         </article>
