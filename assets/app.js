@@ -96,8 +96,6 @@ function renderEditor(ed) {
   themes.textContent = top.length ? `Top themes: ${top.join(" · ")}` : "Top themes: —";
 }
 
-}
-
 
 function validateAudioIndex(data) {
   const errs = [];
