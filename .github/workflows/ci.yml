@@ -1,0 +1,24 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  pulseboard-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: JS syntax check
+        run: node --check assets/app.js
+
+      - name: Basic file presence
+        run: |
+          test -f index.html
+          test -f assets/styles.css
+          test -f assets/app.js
