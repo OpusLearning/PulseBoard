@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 from .ai import AIClient
+from .ranking import pick_top3
 
 
 LENSES = ["neutral", "cheeky", "contrarian", "eli12"]
@@ -13,9 +14,6 @@ LENSES = ["neutral", "cheeky", "contrarian", "eli12"]
 def _iso_now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
-
-def _top3_from_pulse(pulse: dict[str, Any]) -> list[dict[str, Any]]:
-    items = list(pulse.get("items") or [])
 
     def key(it: dict[str, Any]) -> float:
         ts = it.get("published_utc") or ""
@@ -61,7 +59,7 @@ def _ai_generate_today(*, pulse: dict[str, Any], editor: dict[str, Any], day: st
     - Output JSON only.
     """
 
-    top3 = _top3_from_pulse(pulse)
+    top3 = pick_top3(pulse)
 
     contract = {
         "variants": {
@@ -183,9 +181,9 @@ def generate_today(*, pulse: dict[str, Any], editor: dict[str, Any], audio: dict
 
     if use_ai:
         core = _ai_generate_today(pulse=pulse, editor=editor, day=day, ai=ai)  # may raise
-        variants, the3 = _postprocess_ai(core, _top3_from_pulse(pulse))
+        variants, the3 = _postprocess_ai(core, pick_top3(pulse))
     else:
-        the3 = [_heuristic_story_fields(s) for s in _top3_from_pulse(pulse)]
+        the3 = [_heuristic_story_fields(s) for s in pick_top3(pulse)]
         variants = {
             "neutral": {"angle": "Your Pulse is ready. High signal, low noise.", "what_to_say": ["Here’s the key point and why it matters."], "signal": 0.75, "time_s": 180},
             "cheeky": {"angle": "Your Pulse is ready. The plot thickens." , "what_to_say": ["Here’s the line you can reuse: this matters because…"], "signal": 0.70, "time_s": 180},
