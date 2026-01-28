@@ -12,9 +12,10 @@ from .elevenlabs_client import tts_from_env
 from .cards import render_cards
 from .exports import export_bundle
 from .today import generate_today
+from .visuals import ensure_visual_briefs, generate_story_images, generate_composite_image
 
 
-def run(*, day: str, pulse_in: str | Path, out_dir: str | Path, voice: str = "witty-cheeky-sharp", seed: int = 0, use_ai: bool = False, use_tts: bool = False, use_cards: bool = False, use_export: bool = False, use_today: bool = False) -> dict[str, Any]:
+def run(*, day: str, pulse_in: str | Path, out_dir: str | Path, voice: str = "witty-cheeky-sharp", seed: int = 0, use_ai: bool = False, use_tts: bool = False, use_cards: bool = False, use_export: bool = False, use_today: bool = False, use_images: bool = False) -> dict[str, Any]:
     out_dir = Path(out_dir)
     pulse = read_json(pulse_in)
 
@@ -57,6 +58,15 @@ def run(*, day: str, pulse_in: str | Path, out_dir: str | Path, voice: str = "wi
         today = generate_today(pulse=pulse, editor=editor, audio=audio_obj, cards=cards_obj, day=day, use_ai=use_ai, ai=ai)
         write_json_atomic(data_dir / "today.json", today)
         paths["today_json"] = str(data_dir / "today.json")
+
+        if use_images:
+            # Enrich with visual briefs + generate images (idempotent per-day)
+            today = ensure_visual_briefs(today, ai_text=ai)
+            today = generate_story_images(today, out_dir=out_dir, day=day)
+            today = generate_composite_image(today, out_dir=out_dir, day=day)
+            write_json_atomic(data_dir / "today.json", today)
+            paths["story_images"] = str(out_dir / "assets" / "story")
+            paths["composite_image"] = str(out_dir / "assets" / "composite")
 
     if use_export:
         zp = export_bundle(out_dir=out_dir, day=day)

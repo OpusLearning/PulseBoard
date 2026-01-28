@@ -23,6 +23,7 @@ def main(argv: list[str] | None = None) -> int:
     prun.add_argument("--cards", action="store_true", help="Generate quote cards PNGs (requires Pillow)")
     prun.add_argument("--export", action="store_true", help="Create a daily export ZIP bundle")
     prun.add_argument("--today", action="store_true", help="Generate data/today.json payload")
+    prun.add_argument("--images", action="store_true", help="Generate editorial images (OpenAI Images)")
 
     pval = sub.add_parser("validate-editor", help="Validate an editor.json file")
     pval.add_argument("--file", required=True)
@@ -34,7 +35,7 @@ def main(argv: list[str] | None = None) -> int:
     args = p.parse_args(argv)
 
     if args.cmd == "run":
-        res = run(day=args.date, pulse_in=args.infile, out_dir=args.outdir, voice=args.voice, seed=args.seed, use_ai=args.ai, use_tts=args.tts, use_cards=args.cards, use_export=args.export, use_today=args.today)
+        res = run(day=args.date, pulse_in=args.infile, out_dir=args.outdir, voice=args.voice, seed=args.seed, use_ai=args.ai, use_tts=args.tts, use_cards=args.cards, use_export=args.export, use_today=args.today, use_images=args.images)
         print(res)
         return 0
 
