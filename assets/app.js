@@ -114,7 +114,7 @@ function renderToday(today) {
   const the3 = $("#the3");
   if (the3) {
     const items = today.the3 || [];
-    count.textContent = "3 stories";
+    if (count) count.textContent = "3 stories";
     the3.innerHTML = items.map((s, i) => {
       const link = safeText(s.link || "#");
       const conf = Number(s.confidence || 0);
