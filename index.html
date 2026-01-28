@@ -12,7 +12,13 @@
 
   <header class="top">
     <div class="brand">
-      <div class="mark" aria-hidden="true"></div>
+      <div class="mark" aria-hidden="true">
+  <svg viewBox="0 0 64 64" width="28" height="28" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M8 40c10-18 20-26 28-26 10 0 18 7 20 18" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M10 44h12l4-10 6 20 6-14h16" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="52" cy="32" r="3.5" fill="currentColor"/>
+  </svg>
+</div>
       <div>
         <h1>Pulseboard</h1>
         <p class="sub">3 minutes to clarity. High signal, socially usable.</p>
@@ -21,8 +27,7 @@
 
     <div class="status" role="status" aria-live="polite">
       <div class="pill" id="stamp">Loading…</div>
-      <div class="pill pill-muted" id="count">—</div>
-      <select class="pill pill-muted" id="lens" aria-label="Lens">
+<select class="pill pill-muted" id="lens" aria-label="Lens">
         <option value="neutral">Neutral</option>
         <option value="cheeky">Cheeky</option>
         <option value="contrarian">Contrarian</option>
@@ -72,7 +77,7 @@
         <h2>Share today’s insight</h2>
         <div class="muted" id="cards-meta">Drop one of these and look switched-on.</div>
       </div>
-      <div class="cards-grid" id="cards"></div>
+      <div class="cards-scroll" id="cards"></div>
     </section>
 
     <section class="done" aria-label="Done" id="done" hidden>

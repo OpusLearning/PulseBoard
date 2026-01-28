@@ -177,15 +177,15 @@ function renderCards(today, meter) {
   if (!grid) return;
 
   const cards = today.cards || [];
-  grid.innerHTML = cards.slice(0, 3).map((png) => {
+  grid.innerHTML = cards.slice(0, 3).map((png, idx) => {
     const url = '/' + safeText(png).replace(/^\/+/, '');
     return `
-      <figure class="cardimg">
+      <figure class="cardimg cardimg-wide" style="scroll-snap-align:start">
         <a href="${escapeAttr(url)}" target="_blank" rel="noreferrer">
-          <img src="${escapeAttr(url)}" alt="Pulseboard card" loading="lazy" decoding="async" />
+          <img src="${escapeAttr(url)}" alt="Pulseboard shareable" loading="lazy" decoding="async" />
         </a>
         <figcaption>
-          <span class="muted">Shareable</span>
+          <span class="muted">Shareable ${idx+1}</span>
           <a class="dl" href="${escapeAttr(url)}" download>download</a>
         </figcaption>
       </figure>
