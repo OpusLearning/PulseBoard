@@ -420,3 +420,28 @@ h1 { letter-spacing: -0.01em; }
 @media (min-width: 820px) {
   .cards-scroll { grid-auto-columns: minmax(320px, 420px); }
 }
+
+/* --- Fixes: remove gradient banding + avoid class collision + ensure carousel not clipped --- */
+body{
+  /* Override earlier multi-radial background with a simpler premium background */
+  background: linear-gradient(180deg, #070A10 0%, #05070B 100%) !important;
+}
+.bg{display:none !important;}
+
+.shareables{ margin: 18px 0 24px; }
+
+.cards-scroll{
+  /* Prevent vertical clipping on iOS grid/overflow combos */
+  align-items: start;
+  overflow-y: visible;
+}
+
+.cardimg{
+  /* Ensure figure sizes to its content */
+  height: auto;
+}
+
+.cardimg img{
+  /* Make sure full image is visible */
+  height: auto;
+}
