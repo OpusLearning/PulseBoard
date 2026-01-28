@@ -21,6 +21,7 @@ def main(argv: list[str] | None = None) -> int:
     prun.add_argument("--ai", action="store_true", help="Use OpenAI (requires OPENAI_API_KEY)")
     prun.add_argument("--tts", action="store_true", help="Generate MP3 via ElevenLabs (requires ELEVENLABS_API_KEY + ELEVENLABS_VOICE_ID)")
     prun.add_argument("--cards", action="store_true", help="Generate quote cards PNGs (requires Pillow)")
+    prun.add_argument("--export", action="store_true", help="Create a daily export ZIP bundle")
 
     pval = sub.add_parser("validate-editor", help="Validate an editor.json file")
     pval.add_argument("--file", required=True)
@@ -32,7 +33,7 @@ def main(argv: list[str] | None = None) -> int:
     args = p.parse_args(argv)
 
     if args.cmd == "run":
-        res = run(day=args.date, pulse_in=args.infile, out_dir=args.outdir, voice=args.voice, seed=args.seed, use_ai=args.ai, use_tts=args.tts, use_cards=args.cards)
+        res = run(day=args.date, pulse_in=args.infile, out_dir=args.outdir, voice=args.voice, seed=args.seed, use_ai=args.ai, use_tts=args.tts, use_cards=args.cards, use_export=args.export)
         print(res)
         return 0
 
