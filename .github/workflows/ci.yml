@@ -17,6 +17,9 @@ jobs:
       - name: JS syntax check
         run: node --check assets/app.js
 
+      - name: JS contract check (editor.example.json)
+        run: node scripts/test_editor_validate.js
+
       - name: Basic file presence
         run: |
           test -f index.html

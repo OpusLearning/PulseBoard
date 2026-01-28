@@ -1,6 +1,7 @@
 /* Pulseboard frontend — minimal, robust, no build step */
 
 const ENDPOINT = "/data/pulse.json";
+const EDITOR_ENDPOINT = "/data/editor.json";
 
 function $(sel) { return document.querySelector(sel); }
 
@@ -50,6 +51,49 @@ async function fetchPulse() {
   const errs = validatePulse(data);
   if (errs.length) throw new Error(errs.join("; "));
   return data;
+}
+
+function validateEditor(data) {
+  const errs = [];
+  if (!data || typeof data !== "object") errs.push("editor.json is not an object");
+  if (data && typeof data.editors_brief !== "string") errs.push("editor.json missing editors_brief");
+  if (data && !Array.isArray(data.top_themes)) errs.push("editor.json missing top_themes[]");
+  if (data && (!data.most_memeable || typeof data.most_memeable !== "object")) errs.push("editor.json missing most_memeable");
+  return errs;
+}
+
+async function fetchEditor() {
+  const res = await fetch(EDITOR_ENDPOINT, { cache: "no-store" });
+  if (!res.ok) throw new Error(`Failed to load editor.json (${res.status})`);
+  const data = await res.json();
+  const errs = validateEditor(data);
+  if (errs.length) throw new Error(errs.join("; "));
+  return data;
+}
+
+function renderEditor(ed) {
+  const briefTitle = document.querySelector("#brief-title");
+  const briefText = document.querySelector("#brief-text");
+  const memeable = document.querySelector("#memeable");
+  const themes = document.querySelector("#themes");
+
+  if (!briefTitle || !briefText || !memeable || !themes) return;
+
+  // Title: keep it simple for now; later we can use a daily headline.
+  briefTitle.textContent = safeText(ed.voice || "Pulseboard");
+  briefText.textContent = safeText(ed.editors_brief || "");
+
+  const mm = ed.most_memeable || {};
+  const headline = safeText(mm.headline || "");
+  const link = safeText(mm.link || "");
+  memeable.innerHTML = link
+    ? `Most memeable: <a href="${escapeAttr(link)}" target="_blank" rel="noreferrer">${escapeHTML(headline)}</a>`
+    : `Most memeable: ${escapeHTML(headline)}`;
+
+  const top = (ed.top_themes || []).slice(0, 4).map(t => safeText(t.theme)).filter(Boolean);
+  themes.textContent = top.length ? `Top themes: ${top.join(" · ")}` : "Top themes: —";
+}
+
 }
 
 function groupBySource(items) {
@@ -174,6 +218,13 @@ function escapeAttr(s) {
   try {
     const data = await fetchPulse();
     render(data);
+
+    try {
+      const ed = await fetchEditor();
+      renderEditor(ed);
+    } catch (e2) {
+      // editor.json is optional; ignore failures for now
+    }
   } catch (e) {
     renderError(e);
   }

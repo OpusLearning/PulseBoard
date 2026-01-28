@@ -180,3 +180,31 @@ h1{margin:0; font-size:26px; letter-spacing:.2px}
   .card{transition:none}
   .card:hover{transform:none}
 }
+
+/* --- Product v2: hero (editor\'s brief) --- */
+.hero {
+  margin: 10px 0 18px;
+  padding: 14px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+  border-radius: 16px;
+}
+.hero-inner { padding: 6px 8px; }
+.hero-kicker {
+  font-size: 12px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  opacity: .75;
+}
+.hero-title { margin: 8px 0 6px; font-size: 18px; }
+.hero-brief { margin: 0 0 10px; opacity: .92; line-height: 1.45; }
+.hero-row { display: flex; flex-wrap: wrap; gap: 10px; }
+.hero-chip {
+  padding: 10px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(0,0,0,0.18);
+  font-size: 13px;
+}
+.hero-chip a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+.hero-chip.muted { opacity: .8; }
