@@ -114,6 +114,52 @@ def _draw_poster(*, spec: CardSpec, kicker: str, headline: str, insight: str, fo
     img.convert("RGB").save(out_path, format="PNG", optimize=True)
 
 
+def _draw_image_card(*, spec: CardSpec, src_path: Path, caption: str, footer: str, out_path: Path) -> None:
+    """Wrap an existing editorial image into the 4:5 card frame.
+
+    Keeps a quiet frame + footer so it sits alongside the text posters.
+    """
+    from PIL import Image, ImageDraw
+
+    bg = (9, 11, 16)  # near-black
+    fg = (245, 245, 245)
+    muted = (190, 190, 190)
+    stroke = (255, 255, 255, 28)
+
+    base = Image.new("RGBA", (spec.w, spec.h), bg + (255,))
+    d = ImageDraw.Draw(base)
+
+    # Outer frame
+    d.rounded_rectangle((44, 44, spec.w - 44, spec.h - 44), radius=28, outline=stroke, width=2)
+
+    # Image area (leave room for caption + footer)
+    pad_x = 84
+    top = 110
+    bottom = 170
+    box = (pad_x, top, spec.w - pad_x, spec.h - bottom)
+
+    try:
+        src = Image.open(src_path).convert("RGBA")
+    except Exception:
+        src = None
+
+    if src is not None:
+        bw = box[2] - box[0]
+        bh = box[3] - box[1]
+        src.thumbnail((bw, bh), Image.Resampling.LANCZOS)
+        ox = box[0] + (bw - src.size[0]) // 2
+        oy = box[1] + (bh - src.size[1]) // 2
+        base.alpha_composite(src, dest=(ox, oy))
+
+    f_c = _font(30, True)
+    f_f = _font(26, False)
+    d.text((pad_x, spec.h - 150), caption, font=f_c, fill=fg)
+    d.text((pad_x, spec.h - 110), footer, font=f_f, fill=muted)
+
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    base.convert("RGB").save(out_path, format="PNG", optimize=True)
+
+
 def render_cards(*, editor: dict[str, Any], out_dir: str | Path, day: str, spec: CardSpec = CardSpec()) -> dict[str, Any]:
     out_dir = Path(out_dir)
     cards_dir = out_dir / "assets" / "cards"
@@ -164,6 +210,28 @@ def render_cards(*, editor: dict[str, Any], out_dir: str | Path, day: str, spec:
     p3 = cards_dir / f"{day}-03.png"
     _draw_poster(spec=spec, kicker="Shareable", headline=c3_head, insight=c3_insight, footer=footer, out_path=p3)
     paths.append({"id": f"{day}-03", "png": f"assets/cards/{p3.name}", "caption": "Most memeable", "size": {"w": spec.w, "h": spec.h}})
+
+    # --- Visual layer images (if present) ---
+    if isinstance(today, dict):
+        comp = today.get("composite_image")
+        if isinstance(comp, str) and comp.strip():
+            src = out_dir / comp
+            if src.exists():
+                p4 = cards_dir / f"{day}-04.png"
+                _draw_image_card(spec=spec, src_path=src, caption="Today’s visual", footer=footer, out_path=p4)
+                paths.append({"id": f"{day}-04", "png": f"assets/cards/{p4.name}", "caption": "Composite visual", "size": {"w": spec.w, "h": spec.h}})
+
+        story_imgs = today.get("story_images")
+        if isinstance(story_imgs, list):
+            for i, rel in enumerate(story_imgs[:3], start=1):
+                if not isinstance(rel, str) or not rel.strip():
+                    continue
+                src = out_dir / rel
+                if not src.exists():
+                    continue
+                outp = cards_dir / f"{day}-{4+i:02d}.png"  # 05,06,07
+                _draw_image_card(spec=spec, src_path=src, caption=f"Story {i}", footer=footer, out_path=outp)
+                paths.append({"id": f"{day}-{4+i:02d}", "png": f"assets/cards/{outp.name}", "caption": f"Story image {i}", "size": {"w": spec.w, "h": spec.h}})
 
     cards_json = {
         "date": day,
