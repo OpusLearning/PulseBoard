@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["date", "generated_utc", "cards"],
+  "properties": {
+    "date": {"type": "string"},
+    "generated_utc": {"type": "string"},
+    "cards": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "png", "caption", "size"],
+        "properties": {
+          "id": {"type": "string"},
+          "png": {"type": "string"},
+          "caption": {"type": "string"},
+          "size": {
+            "type": "object",
+            "required": ["w", "h"],
+            "properties": {
+              "w": {"type": "integer"},
+              "h": {"type": "integer"}
+            }
+          }
+        }
+      }
+    }
+  }
+}

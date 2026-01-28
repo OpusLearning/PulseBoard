@@ -3,6 +3,7 @@
 const ENDPOINT = "/data/pulse.json";
 const EDITOR_ENDPOINT = "/data/editor.json";
 const AUDIO_ENDPOINT = "/data/audio.json";
+const CARDS_ENDPOINT = "/data/cards.json";
 
 function $(sel) { return document.querySelector(sel); }
 
@@ -142,6 +143,53 @@ function groupBySource(items) {
   return map;
 }
 
+
+function validateCards(data) {
+  const errs = [];
+  if (!data || typeof data !== "object") errs.push("cards.json is not an object");
+  if (data && !Array.isArray(data.cards)) errs.push("cards.json missing cards[]");
+  return errs;
+}
+
+async function fetchCards() {
+  const res = await fetch(CARDS_ENDPOINT, { cache: "no-store" });
+  if (!res.ok) throw new Error(`Failed to load cards.json (${res.status})`);
+  const data = await res.json();
+  const errs = validateCards(data);
+  if (errs.length) throw new Error(errs.join("; "));
+  return data;
+}
+
+function renderCards(data) {
+  const grid = document.querySelector("#cards");
+  const meta = document.querySelector("#cards-meta");
+  if (!grid || !meta) return;
+
+  const cards = data.cards || [];
+  if (!cards.length) {
+    meta.textContent = "No cards yet.";
+    return;
+  }
+
+  meta.textContent = `Latest: ${safeText(data.date || "")}`;
+
+  grid.innerHTML = cards.slice(0, 3).map(c => {
+    const url = '/' + safeText(c.png || '').replace(/^\/+/, '');
+    const cap = safeText(c.caption || '');
+    return `
+      <figure class="cardimg">
+        <a href="${escapeAttr(url)}" target="_blank" rel="noreferrer">
+          <img src="${escapeAttr(url)}" alt="${escapeAttr(cap)}" loading="lazy" decoding="async" />
+        </a>
+        <figcaption>
+          <span>${escapeHTML(cap)}</span>
+          <a class="dl" href="${escapeAttr(url)}" download>download</a>
+        </figcaption>
+      </figure>
+    `;
+  }).join('');
+}
+
 function sortNewestFirst(items) {
   return [...items].sort((a, b) => {
     const da = parseDate(a.published_utc)?.getTime() ?? 0;
@@ -262,6 +310,13 @@ function escapeAttr(s) {
       try {
         const ax = await fetchAudioIndex();
         renderAudioIndex(ax);
+
+        try {
+          const cx = await fetchCards();
+          renderCards(cx);
+        } catch (e4) {
+          // cards optional
+        }
       } catch (e3) {
         // audio is optional
         const meta = document.querySelector("#audio-meta");

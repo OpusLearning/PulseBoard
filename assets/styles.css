@@ -221,3 +221,56 @@ h1{margin:0; font-size:26px; letter-spacing:.2px}
 #audio-player { width: 100%; }
 .audio-meta { margin-top: 8px; font-size: 12px; opacity: .75; }
 .audio-meta a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+
+/* Pulseboard design tokens */
+:root{
+  --bg0: #070A10;
+  --bg1: #0B1220;
+  --card: rgba(255,255,255,0.06);
+  --stroke: rgba(255,255,255,0.10);
+  --text: rgba(255,255,255,0.92);
+  --muted: rgba(255,255,255,0.70);
+  --faint: rgba(255,255,255,0.55);
+
+  /* Accent set: cyber-editorial (known engaging pattern: dark + neon micro-accents) */
+  --a1: #7C3AED; /* violet */
+  --a2: #06B6D4; /* cyan */
+  --a3: #F97316; /* orange */
+  --a4: #22C55E; /* green */
+}
+
+/* --- Product v2: cards (responsive, smooth) --- */
+.cards { margin: 18px 0 24px; }
+.cards-head { display:flex; align-items:baseline; justify-content:space-between; gap: 12px; }
+.cards-head h2 { margin: 0; font-size: 16px; letter-spacing: .02em; }
+.cards-grid {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.cardimg {
+  margin: 0;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.04);
+}
+.cardimg a { display:block; }
+.cardimg img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  display: block;
+}
+.cardimg figcaption {
+  display:flex;
+  justify-content:space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.75);
+}
+.cardimg .dl { color: rgba(255,255,255,0.85); text-decoration: underline; text-underline-offset: 3px; }
