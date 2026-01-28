@@ -1,0 +1,23 @@
+{
+  "generated_utc": "2026-01-28T11:00:08Z",
+  "items": [
+    {
+      "source": "BBC World",
+      "title": "Markets wobble as ministers trade blame",
+      "link": "https://example.com/story1",
+      "published_utc": "2026-01-28T10:18:57Z"
+    },
+    {
+      "source": "Reuters",
+      "title": "Election officials face scrutiny after recount",
+      "link": "https://example.com/story2",
+      "published_utc": "2026-01-28T09:10:00Z"
+    },
+    {
+      "source": "AP",
+      "title": "Storm warnings issued as travel chaos spreads",
+      "link": "https://example.com/story3",
+      "published_utc": "2026-01-28T08:00:00Z"
+    }
+  ]
+}

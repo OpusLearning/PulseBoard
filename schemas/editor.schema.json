@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["date", "generated_utc", "voice", "editors_brief", "top_themes", "most_memeable"],
+  "properties": {
+    "date": {"type": "string"},
+    "generated_utc": {"type": "string"},
+    "voice": {"type": "string"},
+    "editors_brief": {"type": "string"},
+    "top_themes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["theme", "count", "links"],
+        "properties": {
+          "theme": {"type": "string"},
+          "count": {"type": "integer", "minimum": 0},
+          "links": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    },
+    "most_memeable": {
+      "type": "object",
+      "required": ["headline", "caption", "rationale", "link"],
+      "properties": {
+        "headline": {"type": "string"},
+        "caption": {"type": "string"},
+        "rationale": {"type": "string"},
+        "link": {"type": "string"}
+      }
+    }
+  }
+}

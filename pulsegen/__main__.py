@@ -1,0 +1,41 @@
+from __future__ import annotations
+
+import argparse
+
+from .pipeline import run
+from .io import read_json
+from .validate import validate_editor
+
+
+def main(argv: list[str] | None = None) -> int:
+    p = argparse.ArgumentParser(prog="pulsegen")
+    sub = p.add_subparsers(dest="cmd", required=True)
+
+    prun = sub.add_parser("run", help="Run daily generation pipeline")
+    prun.add_argument("--date", required=True, help="YYYY-MM-DD")
+    prun.add_argument("--in", dest="infile", required=True, help="Input pulse.json")
+    prun.add_argument("--out", dest="outdir", required=True, help="Output directory")
+    prun.add_argument("--voice", default="witty-cheeky-sharp")
+    prun.add_argument("--seed", type=int, default=0)
+
+    pval = sub.add_parser("validate-editor", help="Validate an editor.json file")
+    pval.add_argument("--file", required=True)
+
+    args = p.parse_args(argv)
+
+    if args.cmd == "run":
+        res = run(day=args.date, pulse_in=args.infile, out_dir=args.outdir, voice=args.voice, seed=args.seed)
+        print(res)
+        return 0
+
+    if args.cmd == "validate-editor":
+        data = read_json(args.file)
+        validate_editor(data)
+        print({"ok": True})
+        return 0
+
+    raise SystemExit(2)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
