@@ -20,6 +20,9 @@ jobs:
       - name: JS contract check (editor.example.json)
         run: node scripts/test_editor_validate.js
 
+      - name: JS contract check (audio.example.json)
+        run: node scripts/test_audio_validate.js
+
       - name: Basic file presence
         run: |
           test -f index.html

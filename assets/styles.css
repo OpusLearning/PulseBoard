@@ -208,3 +208,16 @@ h1{margin:0; font-size:26px; letter-spacing:.2px}
 }
 .hero-chip a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
 .hero-chip.muted { opacity: .8; }
+
+/* --- Product v2: audio --- */
+.audio {
+  margin: 12px 0 6px;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(0,0,0,0.18);
+}
+.audio-title { font-size: 13px; opacity: .9; margin-bottom: 8px; }
+#audio-player { width: 100%; }
+.audio-meta { margin-top: 8px; font-size: 12px; opacity: .75; }
+.audio-meta a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }

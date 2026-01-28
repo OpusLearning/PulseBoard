@@ -2,6 +2,7 @@
 
 const ENDPOINT = "/data/pulse.json";
 const EDITOR_ENDPOINT = "/data/editor.json";
+const AUDIO_ENDPOINT = "/data/audio.json";
 
 function $(sel) { return document.querySelector(sel); }
 
@@ -94,6 +95,41 @@ function renderEditor(ed) {
   themes.textContent = top.length ? `Top themes: ${top.join(" · ")}` : "Top themes: —";
 }
 
+}
+
+
+function validateAudioIndex(data) {
+  const errs = [];
+  if (!data || typeof data !== "object") errs.push("audio.json is not an object");
+  if (data && typeof data.latest !== "string") errs.push("audio.json missing latest");
+  if (data && !Array.isArray(data.items)) errs.push("audio.json missing items[]");
+  return errs;
+}
+
+async function fetchAudioIndex() {
+  const res = await fetch(AUDIO_ENDPOINT, { cache: "no-store" });
+  if (!res.ok) throw new Error(`Failed to load audio.json (${res.status})`);
+  const data = await res.json();
+  const errs = validateAudioIndex(data);
+  if (errs.length) throw new Error(errs.join("; "));
+  return data;
+}
+
+function renderAudioIndex(idx) {
+  const player = document.querySelector("#audio-player");
+  const meta = document.querySelector("#audio-meta");
+  if (!player || !meta) return;
+
+  const latest = safeText(idx.latest || "");
+  if (!latest) {
+    meta.textContent = "No audio yet.";
+    return;
+  }
+  player.src = latest.startsWith("/") ? latest : `/${latest}`;
+
+  const item = (idx.items || [])[0] || {};
+  const date = safeText(item.date || "");
+  meta.innerHTML = date ? `Latest: ${escapeHTML(date)} · <a href="${escapeAttr(player.src)}">download</a>` : `Latest · <a href="${escapeAttr(player.src)}">download</a>`;
 }
 
 function groupBySource(items) {
@@ -222,6 +258,15 @@ function escapeAttr(s) {
     try {
       const ed = await fetchEditor();
       renderEditor(ed);
+
+      try {
+        const ax = await fetchAudioIndex();
+        renderAudioIndex(ax);
+      } catch (e3) {
+        // audio is optional
+        const meta = document.querySelector("#audio-meta");
+        if (meta) meta.textContent = "Audio unavailable.";
+      }
     } catch (e2) {
       // editor.json is optional; ignore failures for now
     }
