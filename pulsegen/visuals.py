@@ -122,9 +122,9 @@ def _image_prompt_for_brief(title: str, brief: dict[str, Any]) -> str:
         "Composition: clean, one focal idea, negative space.",
         "Palette: charcoal/near-black background, off-white linework, ONE subtle accent glow (violet/blue/amber).",
         "No gradients that band. No collage. No stock-photo aesthetic.",
-        "High contrast, mobile-legible.
-Safe area: keep all important content at least 12% away from edges.
-No text baked into image.",
+        "High contrast, mobile-legible.",
+        "Safe area: keep all important content at least 12% away from edges.",
+        "No text baked into image.",
     ])
 
 
