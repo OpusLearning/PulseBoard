@@ -172,6 +172,26 @@ function renderAudio(today, meter) {
   player.addEventListener("play", () => meter.mark("audio"), { once: true });
 }
 
+function cardMetaFor(today, png) {
+  const name = String(png || '');
+  const the3 = today.the3 || [];
+  const v = (today.variants && today.variants[getLens()]) || (today.variants && today.variants.neutral) || {};
+
+  if (name.includes('-04.png')) {
+    return { title: 'Today’s visual', desc: safeText(v.angle || 'High signal, low noise.'), kicker: 'Composite' };
+  }
+
+  const map = [{ suf: '-05.png', i: 0 }, { suf: '-06.png', i: 1 }, { suf: '-07.png', i: 2 }];
+  for (const m of map) {
+    if (name.includes(m.suf)) {
+      const s = the3[m.i] || {};
+      return { title: safeText(s.title || `Story ${m.i+1}`), desc: safeText(s.summary || s.what_to_say || ''), kicker: safeText(s.source || 'Story') };
+    }
+  }
+
+  return { title: 'Shareable', desc: '', kicker: '' };
+}
+
 function cardTitleFor(today, png) {
   const name = String(png || );
   const the3 = today.the3 || [];
@@ -192,6 +212,11 @@ function renderCards(today, meter) {
     const url = '/' + safeText(png).replace(/^\/+/, '');
     return `
       <figure class="cardimg cardimg-wide" style="scroll-snap-align:start">
+        <div class="cardmeta">
+  <div class="cardmeta-k">${escapeHTML((cardMetaFor(today, png).kicker||"").toUpperCase())}</div>
+  <div class="cardmeta-t">${escapeHTML(cardMetaFor(today, png).title)}</div>
+  ${cardMetaFor(today, png).desc ? `<div class=\"cardmeta-d\">${escapeHTML(cardMetaFor(today, png).desc)}</div>` : ``}
+</div>
         <a href="${escapeAttr(url)}" target="_blank" rel="noreferrer">
           <img src="${escapeAttr(url)}" alt="Pulseboard shareable" loading="lazy" decoding="async" />
         </a>
