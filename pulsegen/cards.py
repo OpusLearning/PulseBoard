@@ -235,7 +235,7 @@ def render_cards(*, editor: dict[str, Any], out_dir: str | Path, day: str, spec:
 
     # Prefer visual cards first in the carousel (so they show without scrolling)
     def _sort_key(c: dict) -> int:
-        cid = str(c.get(id) or )
+        cid = str(c.get("id") or "")
         # Put 04-07 first (composite + story images), then 01-03
         if cid.endswith("-04") or cid.endswith("-05") or cid.endswith("-06") or cid.endswith("-07"):
             return 0
