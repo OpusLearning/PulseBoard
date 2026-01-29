@@ -233,6 +233,15 @@ def render_cards(*, editor: dict[str, Any], out_dir: str | Path, day: str, spec:
                 _draw_image_card(spec=spec, src_path=src, caption=f"Story {i}", footer=footer, out_path=outp)
                 paths.append({"id": f"{day}-{4+i:02d}", "png": f"assets/cards/{outp.name}", "caption": f"Story image {i}", "size": {"w": spec.w, "h": spec.h}})
 
+    # Prefer visual cards first in the carousel (so they show without scrolling)
+    def _sort_key(c: dict) -> int:
+        cid = str(c.get(id) or )
+        # Put 04-07 first (composite + story images), then 01-03
+        if cid.endswith(-04) or cid.endswith(-05) or cid.endswith(-06) or cid.endswith(-07):
+            return 0
+        return 1
+    paths.sort(key=_sort_key)
+
     cards_json = {
         "date": day,
         "generated_utc": datetime.now(timezone.utc).isoformat(),
