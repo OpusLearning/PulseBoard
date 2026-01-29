@@ -144,7 +144,8 @@ def generate_story_images(today: dict[str, Any], *, out_dir: Path, day: str) -> 
             continue
 
         out_path = assets_story / f"{day}-{idx:02d}.png"
-        rel = f"assets/story/{out_path.name}"        force = os.environ.get("PULSEGEN_FORCE_IMAGES", "0") == "1"
+        rel = f"assets/story/{out_path.name}"
+        force = os.environ.get("PULSEGEN_FORCE_IMAGES", "0") == "1"
         if (not force) and out_path.exists() and out_path.stat().st_size > 0:
             out_paths.append(rel)
             continue
@@ -167,7 +168,9 @@ def generate_composite_image(today: dict[str, Any], *, out_dir: Path, day: str) 
         return today
 
     out_path = assets_comp / f"{day}.png"
-    rel = f"assets/composite/{out_path.name}"    force = os.environ.get("PULSEGEN_FORCE_IMAGES", "0") == "1"
+    rel = f"assets/composite/{out_path.name}"
+
+    force = os.environ.get("PULSEGEN_FORCE_IMAGES", "0") == "1"
 
     if force or (not out_path.exists()) or out_path.stat().st_size == 0:
         img = images_from_env()
