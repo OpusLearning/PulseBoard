@@ -11,11 +11,12 @@ from .io import write_json_atomic
 
 
 HOUSE_STYLE = {
-    "style": "flat or softly shaded editorial illustration",
-    "palette": "charcoal/near-black, off-white, ONE accent colour",
-    "composition": "clean, symbolic, one focal idea, lots of negative space",
-    "typography": "clean and consistent, minimal, high contrast",
-    "avoid": "no photorealism, no collage, no chaotic gradients, no meme language",
+    "style": "UI-native symbolic visual (thin-line vector / monoline)",
+    "background": "charcoal/near-black to blend with Pulseboard UI",
+    "palette": "monochrome + ONE accent glow (violet/blue/amber)",
+    "composition": "one metaphor, one focal idea, lots of negative space, crop-safe margins",
+    "typography": "do NOT bake headlines into the image; keep images text-free",
+    "avoid": "no retro posters, no beige/paper texture, no collage, no photorealism, no painterly Midjourney look",
     "tone": "dry, observational, wry (never goofy)",
 }
 
@@ -51,7 +52,7 @@ def ensure_visual_briefs(today: dict[str, Any], *, ai_text) -> dict[str, Any]:
                     "visual_metaphor": "...",
                     "scene_description": "...",
                     "tone": "tense|ironic|calm|unsettling|...",
-                    "overlay_text": "<=6 words or empty"
+                    "overlay_text": "empty string (typography stays in UI)"
                 }
             }
         ],
@@ -60,7 +61,7 @@ def ensure_visual_briefs(today: dict[str, Any], *, ai_text) -> dict[str, Any]:
             "visual_metaphor": "...",
             "scene_description": "...",
             "tone": "...",
-            "overlay_text": "<=6 words or empty"
+            "overlay_text": "empty string (typography stays in UI)"
         }
     }
 
@@ -71,7 +72,7 @@ def ensure_visual_briefs(today: dict[str, Any], *, ai_text) -> dict[str, Any]:
             "Return ONLY valid JSON.",
             "Symbolic metaphor. One focal idea per image.",
             "No photorealism. No collage.",
-            "Overlay text optional; max 6 words.",
+            "Do NOT include embedded text in the image. Typography stays in the UI.",
             "No slang. No emojis.",
         ],
         "stories": stories,
@@ -117,11 +118,13 @@ def _image_prompt_for_brief(title: str, brief: dict[str, Any]) -> str:
         f"Scene: {brief.get('scene_description','')}",
         f"Tone: {brief.get('tone','')}",
         overlay_rule,
-        "Style: flat or softly shaded illustration, not photorealistic.",
+        "Style: thin-line vector / monoline illustration, minimalist, not photorealistic.",
         "Composition: clean, one focal idea, negative space.",
-        "Palette: charcoal/near-black background, off-white foreground, single accent color.",
+        "Palette: charcoal/near-black background, off-white linework, ONE subtle accent glow (violet/blue/amber).",
         "No gradients that band. No collage. No stock-photo aesthetic.",
-        "High contrast, mobile-legible.",
+        "High contrast, mobile-legible.
+Safe area: keep all important content at least 12% away from edges.
+No text baked into image.",
     ])
 
 
