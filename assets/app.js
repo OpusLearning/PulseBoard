@@ -192,15 +192,6 @@ function cardMetaFor(today, png) {
   return { title: 'Shareable', desc: '', kicker: '' };
 }
 
-function cardTitleFor(today, png) {
-  const name = String(png || );
-  const the3 = today.the3 || [];
-  if (name.includes(-04.png)) return Daily composite;
-  if (name.includes(-05.png)) return safeText((the3[0]||{}).title || Story 1);
-  if (name.includes(-06.png)) return safeText((the3[1]||{}).title || Story 2);
-  if (name.includes(-07.png)) return safeText((the3[2]||{}).title || Story 3);
-  return Shareable;
-}
 
 function renderCards(today, meter) {
   const grid = $("#cards");
@@ -215,7 +206,7 @@ function renderCards(today, meter) {
         <div class="cardmeta">
   <div class="cardmeta-k">${escapeHTML((cardMetaFor(today, png).kicker||"").toUpperCase())}</div>
   <div class="cardmeta-t">${escapeHTML(cardMetaFor(today, png).title)}</div>
-  ${cardMetaFor(today, png).desc ? `<div class=\"cardmeta-d\">${escapeHTML(cardMetaFor(today, png).desc)}</div>` : ``}
+  ${cardMetaFor(today, png).desc ? `<div class="cardmeta-d">${escapeHTML(cardMetaFor(today, png).desc)}</div>` : ``}
 </div>
         <a href="${escapeAttr(url)}" target="_blank" rel="noreferrer">
           <img src="${escapeAttr(url)}" alt="Pulseboard shareable" loading="lazy" decoding="async" />
