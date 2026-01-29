@@ -172,6 +172,16 @@ function renderAudio(today, meter) {
   player.addEventListener("play", () => meter.mark("audio"), { once: true });
 }
 
+function cardTitleFor(today, png) {
+  const name = String(png || );
+  const the3 = today.the3 || [];
+  if (name.includes(-04.png)) return Daily composite;
+  if (name.includes(-05.png)) return safeText((the3[0]||{}).title || Story 1);
+  if (name.includes(-06.png)) return safeText((the3[1]||{}).title || Story 2);
+  if (name.includes(-07.png)) return safeText((the3[2]||{}).title || Story 3);
+  return Shareable;
+}
+
 function renderCards(today, meter) {
   const grid = $("#cards");
   if (!grid) return;

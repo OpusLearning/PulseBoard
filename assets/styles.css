@@ -445,3 +445,11 @@ body{
   /* Make sure full image is visible */
   height: auto;
 }
+
+.cardtitle{
+  padding: 12px 12px 6px 12px;
+  font-size: 14px;
+  font-weight: 650;
+  letter-spacing: .01em;
+  color: rgba(255,255,255,0.92);
+}
